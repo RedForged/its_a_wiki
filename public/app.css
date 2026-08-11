@@ -1,0 +1,115 @@
+/* It's a Wiki! — instance chrome (front page, auth, browse) */
+:root {
+  --ink: #202122;
+  --muted: #72777d;
+  --line: #dadad6;
+  --panel: #ffffff;
+  --bg: #f6f6f4;
+  --accent: #3d6de0;
+  --accent-dark: #2b56c4;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.6 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  display: flex; flex-direction: column; min-height: 100vh;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.iaw-topbar { background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 100; }
+.iaw-topbar-inner { max-width: 1120px; margin: 0 auto; padding: 10px 18px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.iaw-logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: var(--ink); }
+.iaw-logo:hover { text-decoration: none; }
+.iaw-logotype { letter-spacing: -.2px; }
+.iaw-nav { display: flex; gap: 4px; flex: 1; flex-wrap: wrap; }
+.iaw-navitem { padding: 6px 12px; border-radius: 6px; color: var(--ink); }
+.iaw-navitem:hover { background: rgba(0,0,0,.05); text-decoration: none; }
+.iaw-navitem.iaw-active { background: rgba(61,109,224,.12); color: var(--accent); font-weight: 600; }
+.iaw-topbar-right { display: flex; align-items: center; gap: 10px; }
+.iaw-topsearch input { padding: 6px 12px; border: 1px solid var(--line); border-radius: 18px; font: inherit; width: 190px; }
+.iaw-userchip { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+.iaw-btn {
+  display: inline-block; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; text-align: center;
+}
+.iaw-btn:hover { border-color: var(--accent); text-decoration: none; }
+.iaw-btn-sm { padding: 4px 12px; font-size: 13px; }
+.iaw-btn-lg { padding: 13px 26px; font-size: 17px; }
+.iaw-btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.iaw-btn-primary:hover { background: var(--accent-dark); filter: none; }
+.iaw-btn-danger { background: #d33; border-color: #d33; color: #fff; }
+.iaw-btn-block { display: block; width: 100%; }
+.iaw-flash { max-width: 1120px; margin: 12px auto 0; padding: 10px 16px; border-radius: 8px; background: #eaf3ff; border: 1px solid #bcd6ff; color: #17418f; }
+.iaw-warn { background: #fff7e0; border: 1px solid #f0e0a8; color: #6b5200; padding: 10px 14px; border-radius: 8px; }
+.iaw-error { background: #fdecea; border: 1px solid #f5c6c0; color: #8f1a13; padding: 10px 14px; border-radius: 8px; margin: 12px 0; }
+.iaw-muted { color: var(--muted); font-size: 13px; }
+.iaw-empty { color: var(--muted); }
+.iaw-avatar { width: 26px; height: 26px; border-radius: 50%; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+
+/* hero */
+.iaw-hero { background: linear-gradient(135deg, #1e3a8a 0%, #3d6de0 55%, #7aa2ff 100%); color: #fff; }
+.iaw-hero-inner { max-width: 1120px; margin: 0 auto; padding: 64px 20px 58px; }
+.iaw-hero h1 { font-size: 44px; line-height: 1.15; margin: 0 0 12px; letter-spacing: -.5px; }
+.iaw-hero-sub { font-size: 18px; max-width: 640px; opacity: .92; margin: 0 0 26px; }
+.iaw-hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 30px; }
+.iaw-hero .iaw-btn-secondary { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.4); color: #fff; }
+.iaw-hero-stats { display: flex; gap: 34px; }
+.iaw-hero-stats b { display: block; font-size: 26px; }
+.iaw-hero-stats span { opacity: .95; }
+
+/* sections */
+.iaw-section { max-width: 1120px; margin: 0 auto; padding: 26px 20px; }
+.iaw-section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+.iaw-section-head h2 { font-size: 21px; margin: 0; }
+.iaw-wikigrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.iaw-wikicard { display: flex; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; color: inherit; transition: box-shadow .12s; }
+.iaw-wikicard:hover { box-shadow: 0 3px 12px rgba(0,0,0,.08); text-decoration: none; border-color: var(--accent); }
+.iaw-wikicard-badge { width: 52px; height: 52px; border-radius: 12px; background: var(--accent); color: #fff; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.iaw-wikicard-body h3 { margin: 0 0 4px; font-size: 17px; color: var(--ink); }
+.iaw-wikicard-body p { margin: 0 0 6px; color: var(--muted); font-size: 13.5px; }
+.iaw-wikicard-meta { color: var(--muted); font-size: 12.5px; }
+.iaw-recent { display: flex; flex-direction: column; gap: 8px; }
+.iaw-recentitem { display: flex; gap: 10px; align-items: flex-start; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+.iaw-recentmeta { color: var(--muted); font-size: 12.5px; }
+.iaw-wiki-link { font-weight: 600; }
+
+/* pages */
+.iaw-page { max-width: 1120px; margin: 0 auto; padding: 26px 20px 70px; }
+.iaw-narrow, .iaw-narrow2 { max-width: 780px; }
+.iaw-page-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.iaw-searchbar { display: flex; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+.iaw-searchbar input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+.iaw-searchbar select { padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font: inherit; }
+
+/* auth */
+.iaw-auth { display: flex; justify-content: center; padding: 60px 20px; }
+.iaw-authcard { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 30px 34px; width: 100%; max-width: 420px; box-shadow: 0 8px 30px rgba(0,0,0,.06); }
+.iaw-authcard h1 { margin: 0 0 4px; }
+.iaw-form label { display: block; margin: 12px 0; font-weight: 600; }
+.iaw-form input:not([type=checkbox]), .iaw-form textarea, .iaw-form select {
+  width: 100%; margin-top: 4px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-weight: 400;
+}
+.iaw-form textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; resize: vertical; }
+.iaw-switch { margin-top: 14px; font-size: 14px; }
+.iaw-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin: 16px 0; }
+.iaw-checkline { display: flex !important; align-items: center; gap: 8px; font-weight: 500 !important; }
+.iaw-checkline input { width: auto !important; }
+.iaw-danger-zone { border-color: #f0b7b0; }
+.iaw-profile-head { display: flex; gap: 16px; align-items: center; max-width: 1120px; margin: 0 auto; padding: 30px 20px 0; }
+.iaw-profile-head h1 { margin: 0; }
+.iaw-feature-list li { margin: 8px 0; }
+.iaw-table { border-collapse: collapse; width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; font-size: 14px; }
+.iaw-table th, .iaw-table td { border: 1px solid var(--line); padding: 7px 10px; text-align: left; }
+.iaw-table th { background: rgba(0,0,0,.04); }
+.iaw-inline-form { display: inline-flex; gap: 4px; }
+
+.iaw-footer { border-top: 1px solid var(--line); background: var(--panel); margin-top: 40px; flex-shrink: 0; }
+.iaw-footer-inner { max-width: 1120px; margin: 0 auto; padding: 18px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.iaw-home, .iaw-page, .iaw-auth { flex: 1 0 auto; box-sizing: border-box; }
+
+@media (max-width: 700px) {
+  .iaw-hero h1 { font-size: 32px; }
+  .iaw-topsearch { display: none; }
+}
