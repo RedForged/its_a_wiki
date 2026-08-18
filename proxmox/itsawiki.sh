@@ -139,6 +139,7 @@ done
 
 info "Running It's a Wiki! in-container installation..."
 pct exec "$CTID" -- bash -c "$(wget -qLO - https://raw.githubusercontent.com/RedForged/its_a_wiki/master/proxmox/itsawiki-install.sh)"
+pct exec "$CTID" -- passwd -d root >/dev/null 2>&1 || true
 
 # Determine IP address of container
 CT_IP=$(pct exec "$CTID" -- ip -4 addr show eth0 | awk '/inet / {print $2}' | cut -d/ -f1 || echo "")

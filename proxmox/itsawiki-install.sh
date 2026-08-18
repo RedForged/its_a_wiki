@@ -18,6 +18,39 @@ err() { echo -e "${RD}[ERR]${CL} $1"; exit 1; }
 
 export DEBIAN_FRONTEND=noninteractive
 
+info "Configuring passwordless root auto-login for Proxmox console..."
+# Configure systemd agetty overrides for automatic root login in Proxmox console
+mkdir -p /etc/systemd/system/container-getty@1.service.d
+cat <<'EOF' > /etc/systemd/system/container-getty@1.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
+EOF
+
+mkdir -p /etc/systemd/system/container-getty@0.service.d
+cat <<'EOF' > /etc/systemd/system/container-getty@0.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud tty%I 115200,38400,9600 $TERM
+EOF
+
+mkdir -p /etc/systemd/system/getty@tty1.service.d
+cat <<'EOF' > /etc/systemd/system/getty@tty1.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I 38400 linux
+EOF
+
+mkdir -p /etc/systemd/system/console-getty.service.d
+cat <<'EOF' > /etc/systemd/system/console-getty.service.d/override.conf
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud console 115200,38400,9600 $TERM
+EOF
+
+# Clear root password so auto-login and shell access works out of the box
+passwd -d root >/dev/null 2>&1 || true
+
 info "Updating package lists..."
 apt-get update -y
 apt-get install -y --no-install-recommends \
@@ -91,6 +124,8 @@ EOF
 
 systemctl daemon-reload
 systemctl enable --now itsawiki.service
+systemctl restart container-getty@1.service >/dev/null 2>&1 || true
+systemctl restart getty@tty1.service >/dev/null 2>&1 || true
 
 info "Creating update utility..."
 cat <<'EOF' > /usr/local/bin/update-itsawiki
@@ -107,5 +142,23 @@ systemctl start itsawiki
 echo "It's a Wiki! updated and restarted successfully."
 EOF
 chmod +x /usr/local/bin/update-itsawiki
+
+# Set up MOTD
+cat <<'EOF' > /etc/motd
+  ___ _       _                     __        ___ _    _ _ 
+ |_ _| |_( )___    __ _            \ \      / (_) | _(_) |
+  | || __|/ ___|  / _` |            \ \ /\ / /| | |/ / | |
+  | || |_ \__ \  | (_| |             \ V  V / | |   <| |_|
+ |___|\__|___/    \__,_|              \_/\_/  |_|_|\_(_) 
+
+ It's a Wiki! — Open Source Fandom-style Wiki Farm
+ Service: itsawiki (Port 3000)
+
+ Commands:
+   Update:  update-itsawiki
+   Logs:    journalctl -u itsawiki -f
+   Restart: systemctl restart itsawiki
+
+EOF
 
 ok "Installation completed successfully!"
