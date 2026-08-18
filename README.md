@@ -77,13 +77,41 @@ Promote an existing member to admin later:
 node scripts/create-admin.js <username>
 ```
 
+### Docker
+
+Run directly with Docker:
+
+```bash
+docker run -d \
+  --name its-a-wiki \
+  -p 3000:3000 \
+  -v its_a_wiki_data:/data \
+  -e ADMIN_USER=admin \
+  -e ADMIN_PASS=changeme123 \
+  axoisaxo/its_a_wiki:latest
+```
+
+Or with `docker-compose.yml`:
+
+```bash
+docker compose up -d
+```
+
+### Proxmox VE Helper Script
+
+Run the following command directly in your **Proxmox VE Host Shell** to automatically provision a dedicated LXC container:
+
+```bash
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/RedForged/its_a_wiki/master/proxmox/itsawiki.sh)"
+```
+
 ### Tests
 
 ```bash
 npm test
 ```
 
-35 tests: wikitext rendering (incl. the template-tag sanitizer and its encoded-payload bypasses), CSS sanitizer (incl. the `</style><script>` breakout regression), JSON store, app models, plus a live end-to-end journey (signup → create wiki → preview/save page → page CSS → history → admin → private-wiki gate).
+36 tests: wikitext rendering (incl. the template-tag sanitizer and its encoded-payload bypasses), CSS sanitizer (incl. the `</style><script>` breakout regression), JSON store, app models, plus a live end-to-end journey (signup → create wiki → preview/save page → page CSS → history → admin → private-wiki gate).
 
 ## Layout & architecture
 

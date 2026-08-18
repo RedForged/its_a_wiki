@@ -1,0 +1,21 @@
+services:
+  its-a-wiki:
+    image: axoisaxo/its_a_wiki:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: its-a-wiki
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DATA_DIR=/data
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin123
+    volumes:
+      - its_a_wiki_data:/data
+
+volumes:
+  its_a_wiki_data:
+    driver: local
