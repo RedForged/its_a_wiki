@@ -6,6 +6,7 @@ const path = require('path');
 
 const { openDb } = require('./lib/store/db');
 const { createApp } = require('./lib/app');
+const { ensureDocsWiki } = require('./lib/docs-wiki');
 const { makeServer } = require('./lib/server/routes');
 const { ts } = require('./lib/util');
 
@@ -115,7 +116,8 @@ server.use((err, req, res, next) => {
   }
 });
 
-ensureAdmin();
+const admin = ensureAdmin();
+ensureDocsWiki(db, app, admin);
 server.listen(PORT, () => {
   console.log(`[itsawiki] It's a Wiki! running at http://localhost:${PORT}`);
   console.log(`[itsawiki] data dir: ${DATA_DIR}`);

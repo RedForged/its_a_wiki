@@ -124,3 +124,56 @@ test('parseTitle / classifyLink', () => {
   assert.strictEqual(parseTitle('Plain Page').type, 'page');
   assert.strictEqual(classifyLink('[[x]]').kind, 'page');
 });
+
+test("bold+italic '''''text''''' produces <b><i>", () => {
+  const r = makeRenderer({});
+  const out = r.render("'''''bold italic'''''", {});
+  assert.ok(out.html.includes("<b><i>bold italic</i></b>"));
+  assert.ok(!out.html.includes("'''"));
+});
+
+test("bold and italic separately still work", () => {
+  const r = makeRenderer({});
+  const out = r.render("'''bold''' text ''italic''", {});
+  assert.ok(out.html.includes("<b>bold</b>"));
+  assert.ok(out.html.includes("<i>italic</i>"));
+});
+
+test("underline ++text++", () => {
+  const r = makeRenderer({});
+  const out = r.render("++underlined text++", {});
+  assert.ok(out.html.includes("<u>underlined text</u>"));
+});
+
+test("strikethrough --text--", () => {
+  const r = makeRenderer({});
+  const out = r.render("--struck text--", {});
+  assert.ok(out.html.includes("<s>struck text</s>"));
+});
+
+test("strikethrough does not match single --", () => {
+  const r = makeRenderer({});
+  const out = r.render("well--known", {});
+  assert.ok(!out.html.includes("<s>"));
+  assert.ok(out.html.includes("well--known"));
+});
+
+test("pipe trick [[Page name|]] uses last segment as label", () => {
+  const r = makeRenderer({});
+  const out = r.render("[[User:John/Smith|]]", { wikiKey: "demo" });
+  assert.ok(out.html.includes(">Smith</a>"));
+  assert.ok(out.html.includes("href=\"/w/demo/p/User%3AJohn%2FSmith\""));
+});
+
+test("pipe trick strips namespace when no slash", () => {
+  const r = makeRenderer({});
+  const out = r.render("[[User:Foo|]]", { wikiKey: "demo" });
+  assert.ok(out.html.includes(">Foo</a>"));
+  assert.ok(out.html.includes("href=\"/w/demo/p/User%3AFoo\""));
+});
+
+test("explicit label overrides pipe trick", () => {
+  const r = makeRenderer({});
+  const out = r.render("[[Page name|My Label]]", { wikiKey: "demo", pageTitle: "Other" });
+  assert.ok(out.html.includes(">My Label</a>"));
+});
