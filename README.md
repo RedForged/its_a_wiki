@@ -42,7 +42,7 @@ Fandom makes custom CSS a backroom developer affair. Here it's a first-class edi
 
 - **Per-page CSS**: on any page hit **Edit → "CSS panel"** (or append `?css=1`) and write CSS that applies *only to that page*, overriding the wiki default. No special rights, no developer account — any editor.
 - **Wiki default CSS**: the wiki admin console has a "Wiki default CSS" textarea that styles the whole wiki.
-- **5 built-in themes** (light / dark / ocean / forest / sunset) as a starting point.
+- **Built-in themes**: dark (default) and forest.
 - **Safely served**: all custom CSS runs through a sanitizer (strips `@import`, `url(...)`, `expression(...)`, `javascript:`, angle brackets, unbalanced braces, unknown at-rules) and is served **only** from `text/css` routes — it can never execute as HTML or script.
 
 ### Security & permissions
@@ -117,4 +117,4 @@ Storage is a simple **JSON-file document store** — atomic writes via tmp+renam
 
 ## License
 
-MIT — build your own successor, fork it, host it for your community.
+GPL-3.0 — build your own successor, fork it, host it for your community.

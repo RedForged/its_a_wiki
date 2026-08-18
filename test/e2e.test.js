@@ -86,7 +86,7 @@ test('full journey: signup → create wiki → page → css → history → admi
   assert.strictEqual(r.status, 302, 'signup redirects');
 
   // create wiki → redirects to editor
-  r = await req('POST', '/create', { form: { key: 'testwiki', name: 'Test Wiki', description: 'demo', theme: 'light' } });
+  r = await req('POST', '/create', { form: { key: 'testwiki', name: 'Test Wiki', description: 'demo', theme: 'dark' } });
   assert.strictEqual(r.status, 302);
   assert.ok(r.headers.location.includes('/w/testwiki/e/Home'));
 
@@ -156,7 +156,7 @@ test('private wiki blocks anonymous viewers', async () => {
   cookie = '';
   await req('POST', '/login', { form: { username: 'alice', password: 'correct-horse-battery' } });
   const adminRes = await req('POST', '/w/testwiki/admin', {
-    form: { save_settings: '1', name: 'Test Wiki', description: 'demo', theme: 'light', private: 'on' },
+    form: { save_settings: '1', name: 'Test Wiki', description: 'demo', theme: 'dark', private: 'on' },
   });
   assert.strictEqual(adminRes.status, 200);
   assert.ok(adminRes.body.includes('Wiki settings saved'));

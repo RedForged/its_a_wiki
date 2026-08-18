@@ -62,3 +62,13 @@ test('buildPageStylesheet merges wiki + page css', () => {
   assert.ok(out.includes('.a{color:red}'));
   assert.ok(out.includes("this page's custom CSS"));
 });
+
+test('WIKI_SKIN_CSS defines themes and adaptive variables', () => {
+  const { WIKI_SKIN_CSS } = require('../lib/skin');
+  assert.ok(WIKI_SKIN_CSS.includes('--iaw-hero-bg'));
+  assert.ok(WIKI_SKIN_CSS.includes('body.theme-dark'));
+  assert.ok(WIKI_SKIN_CSS.includes('body.theme-forest'));
+  assert.ok(!WIKI_SKIN_CSS.includes('body.theme-ocean'));
+  assert.ok(!WIKI_SKIN_CSS.includes('body.theme-sunset'));
+  assert.ok(WIKI_SKIN_CSS.includes('.iaw-hub-hero'));
+});
