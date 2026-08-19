@@ -132,6 +132,7 @@ cat <<'EOF' > /usr/local/bin/update-itsawiki
 #!/usr/bin/env bash
 set -euo pipefail
 echo "Updating It's a Wiki!..."
+git config --global --add safe.directory /opt/its_a_wiki
 cd /opt/its_a_wiki
 systemctl stop itsawiki
 git fetch --all
