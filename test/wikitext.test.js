@@ -37,6 +37,31 @@ test('links: page, labeled, file, special, external', () => {
   assert.ok(out.html.includes('href="https://plain.example"'));
 });
 
+test('bare URLs autolink: https, www, mailto, ftp', () => {
+  const r = makeRenderer({});
+  const out = r.render(
+    'Visit https://example.com now. Check www.example.com/path, email mailto:x@y.com, grab ftp://files.example.com/a.txt',
+    {});
+  assert.ok(out.html.includes('<a class="iaw-extlink" href="https://example.com"'));
+  assert.ok(out.html.includes('<a class="iaw-extlink" href="www.example.com/path"'));
+  assert.ok(out.html.includes('<a class="iaw-extlink" href="mailto:x@y.com"'));
+  assert.ok(out.html.includes('<a class="iaw-extlink" href="ftp://files.example.com/a.txt"'));
+});
+
+test('bare URL autolink strips trailing punctuation', () => {
+  const r = makeRenderer({});
+  const out = r.render('See https://example.com, and (https://example.org).', {});
+  assert.ok(out.html.includes('href="https://example.com"'), 'comma not swallowed');
+  assert.ok(out.html.includes('href="https://example.org"'), 'closing paren not swallowed');
+  assert.ok(out.html.includes('>, and (<'), 'sentence punctuation preserved outside link');
+});
+
+test('bare URL autolink leaves degenerate URLs as text', () => {
+  const r = makeRenderer({});
+  const out = r.render('https://, and mailto: and www. are not links', {});
+  assert.ok(!out.html.includes('<a class="iaw-extlink"'), 'no degenerate links');
+});
+
 test('templates: args, defaults, transclusion, magic words, loop guard', () => {
   const templates = {
     'Template:Quote': '“{{{1}}}” — {{{2|anonymous}}}',
