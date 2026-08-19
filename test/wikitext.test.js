@@ -80,6 +80,32 @@ test('nowiki, pre, code escape wikitext', () => {
   assert.ok(out.html.includes('<pre>raw &amp; code</pre>'));
 });
 
+test('nowiki protects templates and magic words from expansion', () => {
+  const r = makeRenderer({});
+  const out = r.render('<nowiki>{{PAGENAME}}</nowiki> and <nowiki>{{{1}}}</nowiki> and <nowiki>{{Template|arg}}</nowiki>', {
+    wikiKey: 'demo', pageTitle: 'MyPage',
+  });
+  assert.ok(out.html.includes('{{PAGENAME}}'), 'magic word not expanded');
+  assert.ok(out.html.includes('{{{1}}}'), 'template param not expanded');
+  assert.ok(out.html.includes('{{Template|arg}}'), 'template call not expanded');
+  assert.ok(!out.html.includes('MyPage'), 'PAGENAME value not substituted');
+});
+
+test('multiple nowiki tags on one line each escape independently', () => {
+  const r = makeRenderer({});
+  const out = r.render('<nowiki>aaa</nowiki> · <nowiki>bbb</nowiki>', {});
+  assert.ok(out.html.includes('aaa'));
+  assert.ok(out.html.includes('bbb'));
+  assert.ok(!out.html.includes('</nowiki>'), 'no stray closing tag leaks');
+  assert.ok(!out.html.includes('&lt;nowiki&gt;'), 'tags are consumed, not escaped');
+});
+
+test('nowiki single-line block form still works', () => {
+  const r = makeRenderer({});
+  const out = r.render('<nowiki>hello</nowiki>', {});
+  assert.strictEqual(out.html.trim(), 'hello');
+});
+
 test('template-produced tags are sanitized (no event handlers, no javascript: urls, incl. encoded)', () => {
   const templates = {
     'Template:Img': '<img src="/pic.png" onerror="alert(1)">',
