@@ -185,6 +185,45 @@ test('docs wiki auto-generated and editable by instance admin', async () => {
   assert.ok(home.body.includes('Categories'));
 });
 
+test('admin panel can regenerate docs wiki', async () => {
+  cookie = '';
+  await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
+
+  // admin panel has the button
+  let page = await req('GET', '/admin');
+  assert.ok(page.body.includes('Regenerate docs'), 'regenerate button present');
+
+  // click it
+  const res = await req('POST', '/admin', { form: { regenerate_docs: '1' } });
+  assert.strictEqual(res.status, 200);
+  assert.ok(res.body.includes('Docs regenerated'), 'regeneration confirms');
+
+  // docs pages still render after regeneration
+  const home = await req('GET', '/w/docs/p/Home');
+  assert.strictEqual(home.status, 200);
+  assert.ok(home.body.includes('Welcome to It&#39;s a Wiki'));
+});
+
+test('deleted wikis disappear from the admin wiki list', async () => {
+  cookie = '';
+  await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
+
+  // admin panel lists testwiki
+  let page = await req('GET', '/admin');
+  assert.ok(page.body.includes('testwiki'), 'wiki listed before deletion');
+
+  // find its wiki_id from the delete form
+  const m = /name="wiki_id" value="([^"]+)"[^>]*>[\s\S]*?name="delete"/.exec(page.body);
+  assert.ok(m, 'wiki delete form present');
+
+  // delete it
+  await req('POST', '/admin', { form: { wiki_id: m[1], delete: '1' } });
+
+  // after deletion it is gone from the list
+  page = await req('GET', '/admin');
+  assert.ok(!page.body.includes('testwiki'), 'deleted wiki hidden from admin list');
+});
+
 test('user deletion is a hard delete', async () => {
   cookie = '';
   await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
