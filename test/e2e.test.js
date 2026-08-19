@@ -204,6 +204,30 @@ test('admin panel can regenerate docs wiki', async () => {
   assert.ok(home.body.includes('Welcome to It&#39;s a Wiki'));
 });
 
+test('regenerate restores a deleted docs wiki', async () => {
+  cookie = '';
+  await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
+
+  // soft-delete the docs wiki from the wiki admin console
+  let res = await req('POST', '/w/docs/admin', {
+    form: { delete_wiki: '1', confirm_key: 'docs' },
+  });
+  assert.strictEqual(res.status, 302, 'docs wiki deletion redirects');
+
+  // it is now 404
+  let home = await req('GET', '/w/docs/p/Home');
+  assert.strictEqual(home.status, 404, 'docs wiki gone after deletion');
+
+  // regenerate restores it
+  res = await req('POST', '/admin', { form: { regenerate_docs: '1' } });
+  assert.strictEqual(res.status, 200);
+  assert.ok(res.body.includes('Docs regenerated'), 'regeneration confirms');
+
+  home = await req('GET', '/w/docs/p/Home');
+  assert.strictEqual(home.status, 200, 'docs wiki restored');
+  assert.ok(home.body.includes('Welcome to It&#39;s a Wiki'));
+});
+
 test('deleted wikis disappear from the admin wiki list', async () => {
   cookie = '';
   await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
