@@ -166,3 +166,42 @@ test('private wiki blocks anonymous viewers', async () => {
   assert.strictEqual(r.status, 302, 'anonymous redirected to login');
   assert.ok(r.headers.location.includes('/login'));
 });
+
+test('docs wiki auto-generated and editable by instance admin', async () => {
+  cookie = '';
+  await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
+
+  // docs wiki exists and renders
+  const home = await req('GET', '/w/docs/p/Home');
+  assert.strictEqual(home.status, 200, 'docs wiki Home page loads');
+  assert.ok(home.body.includes('Welcome to It&#39;s a Wiki'));
+  assert.ok(home.body.includes('Getting started'));
+
+  // instance admin can access the edit form of a docs page
+  const edit = await req('GET', '/w/docs/e/Home');
+  assert.strictEqual(edit.status, 200, 'instance admin can edit docs pages');
+
+  // docs pages are saved
+  assert.ok(home.body.includes('Categories'));
+});
+
+test('user deletion is a hard delete', async () => {
+  cookie = '';
+  await req('POST', '/login', { form: { username: 'admin', password: 'testpass123' } });
+
+  // alice exists
+  let alice = await req('GET', '/user/alice');
+  assert.strictEqual(alice.status, 200);
+
+  // admin deletes alice from the instance admin panel — find her user_id first
+  const adminPage = await req('GET', '/admin');
+  const idMatch = /name="user_id" value="([^"]+)"/.exec(adminPage.body);
+  assert.ok(idMatch, 'found user_id field in admin panel');
+  const aliceId = idMatch[1];
+
+  await req('POST', '/admin', { form: { user_id: aliceId, delete_user: '1' } });
+
+  // alice is hard-deleted — profile returns 404
+  alice = await req('GET', '/user/alice');
+  assert.strictEqual(alice.status, 404, 'deleted user no longer found');
+});
